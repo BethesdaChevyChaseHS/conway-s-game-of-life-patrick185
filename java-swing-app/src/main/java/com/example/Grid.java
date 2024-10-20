@@ -65,17 +65,62 @@ public class Grid extends JPanel implements ActionListener {
 
     //ALL YOUR CODE GOES HERE
     public void nextGeneration() {
-        //1 Create a new temporary new array to store the values of the next generation
-
-        //2 Visit every cell in the new temporary grid. Check the number of neighboring cells, and based on the rules determine whether the cell will be alive or dead.
-        //Watch out for edge cases!
-
-        //3 Copy the values of your temporary grid to the real grid
-
-
-        //don't mess with this part
+        // Create a new temporary array to store the next generation
+        int[][] nextGrid = new int[rows][cols];
+    
+        // Loop through each cell and apply the rules of the game
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                int liveNeighbors = countLiveNeighbors(row, col);
+    
+                if (grid[row][col] == 1) {
+                    // Apply Conway's rules for live cells
+                    if (liveNeighbors < 2 || liveNeighbors > 3) {
+                        nextGrid[row][col] = 0;  // Cell dies
+                    } else {
+                        nextGrid[row][col] = 1;  // Cell lives
+                    }
+                } else {
+                    // Apply Conway's rule for dead cells
+                    if (liveNeighbors == 3) {
+                        nextGrid[row][col] = 1;  // Cell becomes alive
+                    } else {
+                        nextGrid[row][col] = 0;  // Cell remains dead
+                    }
+                }
+            }
+        }
+    
+        // Copy the values of nextGrid to the real grid
+        grid = nextGrid;
+    
+        // Repaint the grid
         repaint();
     }
+    
+    private int countLiveNeighbors(int row, int col) {
+        int liveNeighbors = 0;
+    
+        // Loop through the 3x3 grid surrounding the cell, including itself
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i == 0 && j == 0) {
+                    continue; // Skip the current cell
+                }
+                int neighborRow = row + i;
+                int neighborCol = col + j;
+    
+                // Make sure the neighbor is within the grid bounds
+                if (neighborRow >= 0 && neighborRow < rows && neighborCol >= 0 && neighborCol < cols) {
+                    liveNeighbors += grid[neighborRow][neighborCol];
+                }
+            }
+        }
+    
+        return liveNeighbors;
+    }
+
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
